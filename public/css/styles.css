@@ -1,19 +1,10 @@
-.todo-list {
-  margin: 0 auto;
-  margin-top: 75px;
+/* Container for all the characters that make up the title/thing to guess */
+#answerDisplay{
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 30px;
 }
-
-input.new-item:focus {
-  outline: none;
-}
-
-.list-group-item > button.delete,
-.list-group-item > button.complete {
-  float: right;
-  height: 25px;
-  margin-left: 5px;
-}
-
-.edit {
-  width: 100%;
+/* each character in the title/thing to guess is in a div with this class */
+.characterHolder{
+  flex: 0 0 20px;
 }
