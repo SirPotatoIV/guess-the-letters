@@ -14,7 +14,8 @@ class Answers {
                 answerHtml = answerHtml + `<div class="${answer[i]}">${answer[i]}</div>`;
             }
         }
-        console.log(answerHtml);
+        return answerHtml
+        // console.log(answerHtml);
     }
 
     displayAnswerHtml(){
@@ -24,8 +25,8 @@ class Answers {
 
 }
 
-const firstAnswer = new Answers("The Matrix");
+// const firstAnswer = new Answers("The Matrix");
 // console.log(firstAnswer.answer)
-firstAnswer.displayAnswerHtml()
+// firstAnswer.displayAnswerHtml()
 
 module.exports = Answers

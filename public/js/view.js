@@ -1,7 +1,11 @@
+const answerDisplayEl = document.getElementById("answerDisplay");
+
 axios.get('/api/answers')
-        .then(function (response) {
+        .then(function ({data}) {
         // handle success
-        console.log(response);
+        // console.log(data);
+        answerDisplayEl.innerHTML = data;
+        
         })
         .catch(function (error) {
         // handle error

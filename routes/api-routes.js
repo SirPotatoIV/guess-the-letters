@@ -6,7 +6,8 @@
 // =============================================================
 
 // Requiring our Todo model
-var db = require("../models");
+const db = require("../models");
+const Answers = require("../api/Answers")
 
 // Routes
 // =============================================================
@@ -15,7 +16,9 @@ module.exports = function(app) {
   // GET route for getting all of the todos
   app.get("/api/answers", function(req, res) {
     // Write code here to retrieve all of the todos from the database and res.json them
-    const result = "hello"
+    const firstAnswer = new Answers("The Matrix");
+    const result = firstAnswer.createAnswerHtml();
+    // const result = "hello"
     return res.json(result)
     // back to the user
   });
