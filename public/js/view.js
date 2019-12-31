@@ -25,11 +25,30 @@ function renderLettersToGuess(){
   
   const letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
   letters.map(function(letter, i){
-    lettersToGuessHtml = lettersToGuessHtml + `<button id="guess-${letter}">${letter}</button>`;
+   
+    lettersToGuessHtml = lettersToGuessHtml + `<button class="guessLetters" id="guess-${letter}">${letter}</button>`;
   })
-  // console.log(lettersToGuessHtml)
+  
   lettersToGuessEl.innerHTML = lettersToGuessHtml;
+  startGuessLetterTriggers();
 }
 renderLettersToGuess()
+
+function startGuessLetterTriggers(){
+  
+  const lettersToGuessEls = document.querySelectorAll(".guessLetters");
+  // console.log(lettersToGuessEls)
+  for (const letter of lettersToGuessEls){
+    letter.addEventListener('click', function(){
+      console.log(event.target.id)
+      const currentId = event.target.id;
+      console.log(currentId)
+      const currentLetter = document.getElementById(`${currentId}`)
+      console.log(currentLetter)
+      currentLetter.classList.add("guessed")
+    })
+  }
+
+}
 
 
