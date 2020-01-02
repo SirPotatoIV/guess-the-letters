@@ -19,6 +19,7 @@ axios.get('/api/answers')
 // renderAnswerDisplay()
 
 const lettersToGuessEl = document.getElementById("lettersToGuess");
+const lettersGuessedEl = document.getElementById("lettersGuessed");
 
 function renderLettersToGuess(){
   let lettersToGuessHtml = "";
@@ -40,15 +41,25 @@ function startGuessLetterTriggers(){
   // console.log(lettersToGuessEls)
   for (const letter of lettersToGuessEls){
     letter.addEventListener('click', function(){
-      console.log(event.target.id)
-      const currentId = event.target.id;
-      console.log(currentId)
-      const currentLetter = document.getElementById(`${currentId}`)
-      console.log(currentLetter)
-      currentLetter.classList.add("guessed")
+      letterRemoval();
+      lettersGuessedRender();
+      
     })
   }
+}
 
+function letterRemoval(){
+  const currentId = event.target.id;
+  const currentLetter = document.getElementById(`${currentId}`)
+  currentLetter.classList.add("guessed")
+}
+
+function lettersGuessedRender(){
+  const letterGuessed = event.target.innerText;
+  const lettersAlreadyGuessed = lettersGuessedEl.innerText;
+  const allLettersGuessed = lettersAlreadyGuessed + letterGuessed;
+
+  lettersGuessedEl.innerText = allLettersGuessed;
 }
 
 
