@@ -43,7 +43,7 @@ function startGuessLetterTriggers(){
     letter.addEventListener('click', function(){
       letterRemoval();
       lettersGuessedRender();
-      
+      checkGuess();      
     })
   }
 }
@@ -62,4 +62,15 @@ function lettersGuessedRender(){
   lettersGuessedEl.innerText = allLettersGuessed;
 }
 
+async function checkGuess(){
+  try {
+    const outcome = await axios.post('/api/answers', {test: 'test'})
+
+    console.log(outcome)
+
+  } catch(error) {
+    // handle error
+    console.log(error);
+  }
+}
 

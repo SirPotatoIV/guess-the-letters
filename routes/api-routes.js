@@ -22,4 +22,12 @@ module.exports = function(app) {
     // Send the html to index.js, which will change index.html to display the html that is sent.
     return res.json(result)
   });
+
+  // POST route for ...
+  app.post("/api/answers", function(req, res) {
+    const request = req.body;
+    console.log(request)
+    return res.json("test")
+  });
+
 };
