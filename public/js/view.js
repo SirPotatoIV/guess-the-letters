@@ -23,8 +23,11 @@ renderLettersToGuess()
 
 function startBtn(){
   startBtnEl.addEventListener("click", function(){
-    console.log("I'VE BEEN CLICKED!")
-  })
+    axios.get('/api/round')
+      .then(function(response){
+        console.log(response)
+      })
+})
 }
 startBtn()
 
@@ -43,7 +46,7 @@ function renderAnswerDisplay(){
       // always executed
     });
 }
-// renderAnswerDisplay()
+renderAnswerDisplay()
 
 function startGuessLetterTriggers(){
   

@@ -13,6 +13,23 @@ const Answers = require("../api/Answers")
 // =============================================================
 module.exports = function(app) {
 
+  // Creates a new row in the database, which will contain all the info for a single round.
+  app.get("/api/round", function(req, res) {
+    // The full thing the player has to guess. This will eventually come from an api
+    // const fullString = "The Matrix";
+    // // Every letter the user has to guess. Current idea is this will be used to check against. Still need to figure out how to create this string.
+    // const letterString = "aehimrtx";
+    
+    // // tells the database to create this row in the table Rounds.
+    // const response = await db.Rounds.create({answer: fullString,
+    //   allLetters: letterString})
+    // ;
+    // // // Stores the html in the constant result
+    // // const result = firstAnswer.createAnswerHtml();
+    // // // Send the html to index.js, which will change index.html to display the html that is sent.
+    return res.json("Response from database when a new round is created")
+  });
+
   // GET route for getting the answer the user has to guess
   app.get("/api/answers", function(req, res) {
     // Used to create the HTML to display to the users blanks for each letter they have to guess.
