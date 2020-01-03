@@ -22,12 +22,14 @@ function renderLettersToGuess(){
 renderLettersToGuess()
 
 function startBtn(){
-  startBtnEl.addEventListener("click", function(){
-    axios.get('/api/round')
-      .then(function(response){
-        console.log(response)
-      })
-})
+  startBtnEl.addEventListener("click", async function(){
+    try{const {data} = await axios.get('/api/round')
+        console.log(data)
+    }
+    catch(err) {
+      console.log("start button error: ", err)
+    }
+  })
 }
 startBtn()
 
