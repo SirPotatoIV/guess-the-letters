@@ -1,3 +1,6 @@
+const fs = require('fs');
+const Letters = require('./Letters')
+
 class Answers {
     
     constructor(answer) {
@@ -5,6 +8,27 @@ class Answers {
         this.answer = answer;
     }
     
+    createAnswerObject(){
+        const answerArray = this.answer.split('');
+        // console.log(answerArray)
+        const answerCharacters = [];
+        answerArray.map(function(character, index){
+            console.log(character)
+            if(character == /[A-Za-z]/){
+                answerCharacters.push(new Letters(character, false));
+            }else{
+                answerCharacters.push(new Letters(character, true));
+            }
+        })
+        console.log(answerCharacters[0])
+        // loop through the string answerStr
+        // -- For each character create a new object for that letter
+        // -- Set the property Character to the current character.
+        // -- If it is a letter, set is guessed to false. If non-letter, set to true
+        // -- Store new object in array answer Characters
+        // Write answerCharacters to a file using fs
+    }
+
     createAnswerHtml(){
         // Stores the html that is created in the loop below
         let answerHtml = "";
@@ -20,12 +44,15 @@ class Answers {
             if(character === " "){
                 answerHtml = answerHtml + `<div class="nonLetter characterHolder">${character}</div>`;
             }else{
-                answerHtml = answerHtml + `<div class="${character} characterHolder">${character}</div>`;
+                answerHtml = answerHtml + `<div class="${character} characterHolder not-guessed">${character}</div>`;
             }
         }
         // returns the answerHtml, which is a bunch of blank divs or special characters in a div that sum up to the movie or show title the user must guess.
         return answerHtml
     }  
 }
+
+const newAnswer = new Answers('The Life of Pi');
+newAnswer.createAnswerObject()
 
 module.exports = Answers

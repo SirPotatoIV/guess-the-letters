@@ -1,11 +1,11 @@
-class Letters {
-    constructor(letter) {
-        this.letter = letter;
-        this.isGuessed = false;
+class Characters {
+    constructor(character, isGuessed) {
+        this.character = character;
+        this.isGuessed = isGuessed;
     }
 }
 
-const a = new Letters("a");
+const a = new Characters("a");
 console.log(a.letter)
 
-module.exports = Letters
+module.exports = Characters

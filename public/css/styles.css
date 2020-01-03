@@ -3,6 +3,7 @@
   display: flex;
   flex-wrap: wrap;
   font-size: 30px;
+  padding: 2px;
 }
 /* each character in the title/thing to guess is in a div with this class */
 .characterHolder{
@@ -11,4 +12,13 @@
 
 .guessed{
   display: none;
+}
+
+.not-guessed{
+  color: white;
+  border-bottom: black solid 2px;
+}
+
+#startBtn{
+  margin: 50px;
 }

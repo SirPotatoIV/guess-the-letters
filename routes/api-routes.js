@@ -25,8 +25,9 @@ module.exports = function(app) {
 
   // POST route for ...
   app.post("/api/answers", function(req, res) {
-    const request = req.body;
-    console.log(request)
+    const {letterGuessed} = req.body;
+   
+    console.log(letterGuessed)
     return res.json("test")
   });
 
