@@ -15,19 +15,31 @@ module.exports = function(app) {
 
   // Creates a new row in the database, which will contain all the info for a single round.
   app.get("/api/round", async function(req, res) {
+    // Used later to make sure the character being checked is part of the alaphbet and not a special symbol.
+    const letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];    
     // The full thing the player has to guess. This will eventually come from an api
-    const fullString = "The Matrix";
+    const answer = "The Matrix";
     // Every letter the user has to guess. Current idea is this will be used to check against. Still need to figure out how to create this string.
-    const letterString = "aehimrtx";
+    let lettersToGuess = "";
+
+    for(let i=0; i < answer.length; i++){
+      const currentLetter = answer.charAt(i).toLowerCase();
+      console.log(currentLetter)
+      const letterCheck = letters.indexOf(currentLetter);
+      const uniqLetterCheck = lettersToGuess.indexOf(currentLetter);
+      if(uniqLetterCheck === -1 && letterCheck > 0){
+        lettersToGuess = lettersToGuess + currentLetter;
+      }
+    }
     
     // tells the database to create this row in the table Rounds.
     try { 
       const response = await db.Rounds.create({
-        answer: fullString, 
-        allLetters: letterString
+        answer: answer, 
+        allLetters: lettersToGuess
       })
       
-      console.log("response from db", response)
+      // console.log("response from db", response)
       return res.json(response)
     }
     catch(err) { 
