@@ -1,16 +1,80 @@
+body{
+  font-size: 6vw;
+  font-family: Garamond;
+}
+h1 {
+  font-size: 10vw;
+  margin: 10px 0px 10px 0px;
+  font-weight: bold;
+}
+section {
+  display: grid;
+  justify-items: center;
+  margin: 2vw 0vw 2vw 0vw
+}
+/* https://css-tricks.com/overriding-default-button-styles/ */
+button {
+  padding: 4px;
+  border: none;
+  background-color: blue;
+  font: inherit;
+  color: white;
+}
+
+button:hover{
+  cursor: pointer;
+}
+
+#container {
+  display: grid;
+  justify-content: center;
+  justify-items: center;
+}
+
+#statusDisplay{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
 /* Container for all the characters that make up the title/thing to guess */
 #answerDisplay{
   display: flex;
   flex-wrap: wrap;
-  font-size: 30px;
-  padding: 2px;
+  justify-content: center;
 }
+
+#lettersToGuess{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+#startBtn{
+  margin: 50px;
+  font-size: 15vw;
+}
+
+.statusIndicator {
+  font-weight: bold;
+  padding-right: 1vw;
+}
+
 /* each character in the title/thing to guess is in a div with this class */
 .characterHolder{
+  display: flex;
+  font-size: 10vw;
+  padding: 2px;
   flex: 0 0 20px;
 }
 
-.guessed{
+.guessLetters {
+  margin: 1vw;
+  width: 10.5vw;
+  font-size: 10vw;
+  text-transform: uppercase;
+}
+
+.guessed, .disappear{
   display: none;
 }
 
@@ -18,11 +82,3 @@
   color: black;
 }
 
-.unknownLetter{
-  color: white;
-  border-bottom: black solid 2px;
-}
-
-#startBtn{
-  margin: 50px;
-}

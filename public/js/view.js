@@ -1,8 +1,10 @@
 // gets the element where the word or sentence being guessed will be displayed
 const answerDisplayEl = document.getElementById("answerDisplay");
 const lettersToGuessEl = document.getElementById("lettersToGuess");
-const lettersGuessedEl = document.getElementById("lettersGuessed");
+const statusDisplayEl = document.getElementById("statusDisplay");
 const startBtnEl = document.getElementById("startBtn");
+const guessCountEl = document.getElementById("guessCount")
+const outcomeEl = document.getElementById("outcome")
 
 function renderLettersToGuess(){
   // Used to create a long string that will be used for changing the html to display a button for each letter that can be guessed by the player
@@ -16,7 +18,6 @@ function renderLettersToGuess(){
   // Changes the html to display all the letter buttons
   lettersToGuessEl.innerHTML = lettersToGuessHtml;
   // Calls function, which starts event listeners for each letter button
-  startGuessLetterTriggers();
 }
 renderLettersToGuess()
 
@@ -30,6 +31,9 @@ function startBtn(){
       localStorage.setItem("roundId", roundId);
       // changes the html to the recieved html from the server, which is what the user is guessing.
       answerDisplayEl.innerHTML = roundHtml;
+      // makes start button disappear. Currently it won't come back until the page is refreshed
+      startBtnEl.classList.add("disappear");
+      startGuessLetterTriggers();
     }
     catch(err) {
       // logs the message recieved if the axios get ends in an error
@@ -52,12 +56,6 @@ function startGuessLetterTriggers(){
         console.log(err)
       }
       try{
-        await lettersGuessedRender();
-      }
-      catch(err){
-        console.log(err)
-      }
-      try{
         await checkGuess();      
       }
       catch(err){
@@ -73,12 +71,16 @@ function letterRemoval(){
   currentLetter.classList.add("guessed")
 }
 
-function lettersGuessedRender(){
-  const letterGuessed = event.target.innerText;
-  const lettersAlreadyGuessed = lettersGuessedEl.innerText;
-  const allLettersGuessed = lettersAlreadyGuessed + letterGuessed;
+function statusDisplayRender(guessCount, outcome){
+  // Update status indicators
+  guessCountEl.innerText = guessCount;
+  outcomeEl.innerText = outcome;
+  // console.log(statusDisplayEl.innerHtml)
+  // const letterGuessed = event.target.innerText;
+  // const lettersAlreadyGuessed = statusDisplayEl.innerText;
+  // const allLettersGuessed = lettersAlreadyGuessed + letterGuessed;
 
-  lettersGuessedEl.innerText = allLettersGuessed;
+  // statusDisplayEl.innerText = allLettersGuessed;
 }
 
 async function checkGuess(){
@@ -90,13 +92,12 @@ async function checkGuess(){
       roundId: roundId
     })  
     const {guessCount, answerHtml, guessCorrect, outcome} = data
-    console.log(guessCount)
+    console.log(guessCorrect)
     if(guessCorrect){
       answerDisplayEl.innerHTML = answerHtml
-      console.log(outcome)
     }
     else{
-      console.log("guess incorrect", guessCount, outcome)
+      statusDisplayRender(guessCount, outcome)
     }
   } 
   catch(error) {
