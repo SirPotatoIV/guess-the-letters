@@ -39,7 +39,7 @@ module.exports = function(app) {
       // Checks if the current letter isn't already in the string lettersToGuess
       const uniqLetterCheck = lettersToGuess.indexOf(currentLetter);
       // If the letter isn't in the string lettersToGuess and it is actually a letter, we store it in lettersToGuess
-      if(uniqLetterCheck === -1 && letterCheck > 0){
+      if(uniqLetterCheck === -1 && letterCheck >= 0){
         lettersToGuess = lettersToGuess + currentLetter;
       }
     }
@@ -75,25 +75,54 @@ module.exports = function(app) {
     return res.json(result)
   });
 
-  // POST route for ...
+  // Occurs every time the player guesses a letter. Front-end sends the guessed letter and the round id, which is the corresponding row in the database.
   app.put("/api/answers", async function(req, res) {
+    // deconstructs what the front-end sent
     const {letterGuessed, roundId} = req.body;
+    // gets all the data for the current round from the database
     const currentRoundData = await db.Rounds.findOne({where: {id: roundId}})
-    let {guessedLetters, allLetters, guessCount} = currentRoundData.toJSON();
+    // decostructs all the data from the round
+    let {guessedLetters, allLetters, guessCount, answer} = currentRoundData.toJSON();
     // If guessedLetters is something other than null, guessedLetters equals the already guessed letters, plus the new one.
     // ELSE, if guessedLetters is null, guessedLetters equals the letter that was guessed.
     guessedLetters = guessedLetters ? guessedLetters + letterGuessed: letterGuessed;
+    // increments the guess count.
     guessCount = guessCount + 1;
-    db.Rounds.update(
+    // updates the current round data in the database
+    await db.Rounds.update(
       {
         guessedLetters: guessedLetters,
         guessCount: guessCount
       }, 
       {where:{id: roundId}}
-      )
-    console.log(letterGuessed, roundId, guessedLetters)
+    )
+    const checkGuess = allLetters.indexOf(letterGuessed);
+    console.log("allLetters, letterGuessed, checkGuess, answer", allLetters, letterGuessed, checkGuess, answer)
+    const letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];    
+    let answerHtml = "";
+    if(checkGuess >= 0){
+      for(let i=0; i < answer.length; i++){
+        const character = answer[i].toLowerCase();
+        const isLetter = letters.indexOf(character)
+        const isGuessed = guessedLetters.indexOf(character);
+        // want to make letters black divs eventually and spaces or special characters visible since the user won't be guessing those
+        if(isLetter >= 0 && isGuessed >= 0){
+          answerHtml = answerHtml + `<div class="characterHolder knownLetter">${character}</div>`;  
+        }
+        if(isLetter >= 0 && isGuessed < 0){
+          answerHtml = answerHtml + `<div class="characterHolder unknownLetter">-</div>`;
+        }
+        if(isLetter < 0){
+          answerHtml = answerHtml + `<div class="nonLetter characterHolder">${answer[i]}</div>`;
+        }
+      }
+    }
 
-    return res.json(letterGuessed)
+    const updatedCurrentRound = {
+      guessCount,
+      answerHtml
+    }
+    return res.json(updatedCurrentRound)
   });
 
 };

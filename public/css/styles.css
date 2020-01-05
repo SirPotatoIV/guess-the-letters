@@ -14,7 +14,11 @@
   display: none;
 }
 
-.not-guessed{
+.knownLetter{
+  color: black;
+}
+
+.unknownLetter{
   color: white;
   border-bottom: black solid 2px;
 }

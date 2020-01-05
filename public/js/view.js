@@ -85,14 +85,15 @@ async function checkGuess(){
   const letterGuessed = event.target.innerText;
   const roundId = localStorage.getItem('roundId')
   try {
-    const outcome = await axios.put('/api/answers', {
+    const {data} = await axios.put('/api/answers', {
       letterGuessed: letterGuessed,
       roundId: roundId
-    })
-
-    console.log(outcome)
-
-  } catch(error) {
+    })  
+    const {guessCount, answerHtml} = data
+    console.log(guessCount)
+    answerDisplayEl.innerHTML = answerHtml
+  } 
+  catch(error) {
     // handle error
     console.log(error);
   }

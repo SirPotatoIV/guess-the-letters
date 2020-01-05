@@ -24,7 +24,7 @@ class Answers {
             if(isLetter < 0){
                 answerHtml = answerHtml + `<div class="nonLetter characterHolder">${answer[i]}</div>`;
             }else{
-                answerHtml = answerHtml + `<div class="characterHolder not-guessed">-</div>`;
+                answerHtml = answerHtml + `<div class="characterHolder unknownLetter">-</div>`;
             }
         }
         // returns the answerHtml, which is a bunch of blank divs or special characters in a div that sum up to the movie or show title the user must guess.
