@@ -6,6 +6,29 @@ const startBtnEl = document.getElementById("startBtn");
 const guessCountEl = document.getElementById("guessCount")
 const outcomeEl = document.getElementById("outcome")
 
+function startBtn(){
+  startBtnEl.addEventListener("click", async function(){
+    // performs a route to the backend, which results in a new row being created in the database and returns the id of the row and the answer for the round.
+    try{const {data} = await axios.get('/api/round')
+      // deconstructs the information sent back by the backend
+      const {roundId, roundHtml} = data;
+      // The id of the row where the answer for this round is stored is saved in local storage to be used for reference
+      localStorage.setItem("roundId", roundId);
+      // changes the html to the recieved html from the server, which is what the user is guessing.
+      answerDisplayEl.innerHTML = roundHtml;
+      // makes start button disappear. Currently it won't come back until the page is refreshed
+      startBtnEl.classList.add("disappear");
+      renderLettersToGuess()
+      startGuessLetterTriggers();
+    }
+    catch(err) {
+      // logs the message recieved if the axios get ends in an error
+      console.log("start button error: ", err)
+    }
+  })
+}
+startBtn()
+
 function renderLettersToGuess(){
   // Used to create a long string that will be used for changing the html to display a button for each letter that can be guessed by the player
   let lettersToGuessHtml = "";
@@ -19,29 +42,6 @@ function renderLettersToGuess(){
   lettersToGuessEl.innerHTML = lettersToGuessHtml;
   // Calls function, which starts event listeners for each letter button
 }
-renderLettersToGuess()
-
-function startBtn(){
-  startBtnEl.addEventListener("click", async function(){
-    // performs a route to the backend, which results in a new row being created in the database and returns the id of the row and the answer for the round.
-    try{const {data} = await axios.get('/api/round')
-      // deconstructs the information sent back by the backend
-      const {roundId, roundHtml} = data;
-      // The id of the row where the answer for this round is stored is saved in local storage to be used for reference
-      localStorage.setItem("roundId", roundId);
-      // changes the html to the recieved html from the server, which is what the user is guessing.
-      answerDisplayEl.innerHTML = roundHtml;
-      // makes start button disappear. Currently it won't come back until the page is refreshed
-      startBtnEl.classList.add("disappear");
-      startGuessLetterTriggers();
-    }
-    catch(err) {
-      // logs the message recieved if the axios get ends in an error
-      console.log("start button error: ", err)
-    }
-  })
-}
-startBtn()
 
 function startGuessLetterTriggers(){
   
@@ -71,10 +71,9 @@ function letterRemoval(){
   currentLetter.classList.add("guessed")
 }
 
-function statusDisplayRender(guessCount, outcome){
+function statusDisplayRender(guessCount){
   // Update status indicators
   guessCountEl.innerText = guessCount;
-  outcomeEl.innerText = outcome;
   // console.log(statusDisplayEl.innerHtml)
   // const letterGuessed = event.target.innerText;
   // const lettersAlreadyGuessed = statusDisplayEl.innerText;
@@ -95,9 +94,16 @@ async function checkGuess(){
     console.log(guessCorrect)
     if(guessCorrect){
       answerDisplayEl.innerHTML = answerHtml
+    }else{
+      statusDisplayRender(guessCount)
     }
-    else{
-      statusDisplayRender(guessCount, outcome)
+    if(outcome === "win"){
+      lettersToGuessEl.innerHTML=`<h1>WINNER!</h1>`
+      startBtnEl.classList.remove("disappear")
+    }
+    if(outcome === "failed"){
+      lettersToGuessEl.innerHTML=`<h1>Sorry, you have run out of guesses. Click start run if you want to try again.</h1>`
+      startBtnEl.classList.remove("disappear")
     }
   } 
   catch(error) {

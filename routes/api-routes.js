@@ -110,7 +110,7 @@ module.exports = function(app) {
       guessCount = guessCount + 1;
     }
     // Decide if game should continue. If guess count reaches 8, the outcome will be set to failed. guess count only increases when the player guesses a letter that is not in the answer
-    if(guessCount === 8){
+    if(guessCount === 3){
       outcome = "failed";
     }
     // Currently have guessCorrect in the condition, because if there are no correctly guessed letters yet, then guessedLetters is null, which means it has no length and an error occurs.
