@@ -89,9 +89,15 @@ async function checkGuess(){
       letterGuessed: letterGuessed,
       roundId: roundId
     })  
-    const {guessCount, answerHtml} = data
+    const {guessCount, answerHtml, guessCorrect, outcome} = data
     console.log(guessCount)
-    answerDisplayEl.innerHTML = answerHtml
+    if(guessCorrect){
+      answerDisplayEl.innerHTML = answerHtml
+      console.log(outcome)
+    }
+    else{
+      console.log("guess incorrect", guessCount, outcome)
+    }
   } 
   catch(error) {
     // handle error

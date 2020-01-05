@@ -65,15 +65,15 @@ module.exports = function(app) {
     return res.json(roundStartData)
   });
 
-  // GET route for getting the answer the user has to guess
-  app.get("/api/answers", function(req, res) {
-    // Used to create the HTML to display to the users blanks for each letter they have to guess.
-    const firstAnswer = new Answers("The Matrix");
-    // Stores the html in the constant result
-    const result = firstAnswer.createAnswerHtml();
-    // Send the html to index.js, which will change index.html to display the html that is sent.
-    return res.json(result)
-  });
+  // // GET route for getting the answer the user has to guess
+  // app.get("/api/answers", function(req, res) {
+  //   // Used to create the HTML to display to the users blanks for each letter they have to guess.
+  //   const firstAnswer = new Answers("The Matrix");
+  //   // Stores the html in the constant result
+  //   const result = firstAnswer.createAnswerHtml();
+  //   // Send the html to index.js, which will change index.html to display the html that is sent.
+  //   return res.json(result)
+  // });
 
   // Occurs every time the player guesses a letter. Front-end sends the guessed letter and the round id, which is the corresponding row in the database.
   app.put("/api/answers", async function(req, res) {
@@ -82,25 +82,19 @@ module.exports = function(app) {
     // gets all the data for the current round from the database
     const currentRoundData = await db.Rounds.findOne({where: {id: roundId}})
     // decostructs all the data from the round
-    let {guessedLetters, allLetters, guessCount, answer} = currentRoundData.toJSON();
-    // If guessedLetters is something other than null, guessedLetters equals the already guessed letters, plus the new one.
-    // ELSE, if guessedLetters is null, guessedLetters equals the letter that was guessed.
-    guessedLetters = guessedLetters ? guessedLetters + letterGuessed: letterGuessed;
-    // increments the guess count.
-    guessCount = guessCount + 1;
-    // updates the current round data in the database
-    await db.Rounds.update(
-      {
-        guessedLetters: guessedLetters,
-        guessCount: guessCount
-      }, 
-      {where:{id: roundId}}
-    )
+    let {guessedLetters, allLetters, guessCount, answer, outcome} = currentRoundData.toJSON();
+    // Checks if the guessed letter matches any of the letters in the answer, which are in the variable allLetters
     const checkGuess = allLetters.indexOf(letterGuessed);
-    console.log("allLetters, letterGuessed, checkGuess, answer", allLetters, letterGuessed, checkGuess, answer)
+    // All the letters in the alphabet, used for generating the html for the answer. Eventually need to store this in its own file because it is used in several places.
     const letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];    
+    // Stores the html that will be updated if the player guessed the word correctly
     let answerHtml = "";
+    let guessCorrect = false;
     if(checkGuess >= 0){
+      // If guessedLetters is something other than null, guessedLetters equals the already guessed letters, plus the new one.
+      // ELSE, if guessedLetters is null, guessedLetters equals the letter that was guessed.
+      guessedLetters = guessedLetters ? guessedLetters + letterGuessed: letterGuessed;
+      guessCorrect = true;
       for(let i=0; i < answer.length; i++){
         const character = answer[i].toLowerCase();
         const isLetter = letters.indexOf(character)
@@ -116,13 +110,34 @@ module.exports = function(app) {
           answerHtml = answerHtml + `<div class="nonLetter characterHolder">${answer[i]}</div>`;
         }
       }
+    }else {
+      guessCorrect = false;
+      guessCount = guessCount + 1;
     }
-
-    const updatedCurrentRound = {
-      guessCount,
-      answerHtml
+    // Decide if game should continue
+    if(guessCount === 8){
+      outcome = "failed";
     }
+    if(guessCorrect && allLetters.length === guessedLetters.length){
+      outcome = "win";
+    }
+    
+    // updates the current round data in the database
+    await db.Rounds.update(
+      {
+        guessedLetters: guessedLetters,
+        guessCount: guessCount
+      }, 
+      {where:{id: roundId}}
+      )
+      
+      const updatedCurrentRound ={
+        guessCount,
+        answerHtml,
+        guessCorrect,
+        outcome,
+      }
     return res.json(updatedCurrentRound)
   });
-
+  
 };
