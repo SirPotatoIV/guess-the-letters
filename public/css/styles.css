@@ -82,3 +82,56 @@ button:hover{
   color: black;
 }
 
+@media (min-width: 576px) {
+  body{
+    font-family: Garamond;
+  }
+  h1 {
+    font-size: 5vw;
+    margin: 10px 0px 10px 0px;
+    font-weight: bold;
+  }
+  section {
+    display: grid;
+    justify-items: center;
+    margin: 1vw 0vw 1vw 0vw
+  }
+ 
+  button {
+    padding: 4px;
+    border: none;
+    background-color: blue;
+    font: inherit;
+    color: white;
+  }
+
+  #startBtn{
+    margin: 1vw;
+    font-size: 8vw;
+  }
+  #statusDisplay{
+    font-size: 2vw;
+  }
+  .statusIndicator {
+    font-weight: bold;
+    padding-right: 1vw;
+  }
+
+  /* each character in the title/thing to guess is in a div with this class */
+  .characterHolder{
+    display: flex;
+    font-size: 5vw;
+    padding: 2px;
+    flex: 0 0 20px;
+  }
+
+  .guessLetters {
+    margin: 1vw;
+    width: 5.5vw;
+    font-size: 5vw;
+    text-transform: uppercase;
+  }
+
+}
+
+
