@@ -5,52 +5,39 @@ const lettersGuessedEl = document.getElementById("lettersGuessed");
 const startBtnEl = document.getElementById("startBtn");
 
 function renderLettersToGuess(){
+  // Used to create a long string that will be used for changing the html to display a button for each letter that can be guessed by the player
   let lettersToGuessHtml = "";
-  
+  // All the possible letters the player can guess
   const letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
-  letters.map(function(letter, i){
-   
+  // Every letter is taken and turned into a button.
+  letters.map(function(letter, i){ 
     lettersToGuessHtml = lettersToGuessHtml + `<button class="guessLetters" id="guess-${letter}">${letter}</button>`;
   })
-  
+  // Changes the html to display all the letter buttons
   lettersToGuessEl.innerHTML = lettersToGuessHtml;
+  // Calls function, which starts event listeners for each letter button
   startGuessLetterTriggers();
 }
 renderLettersToGuess()
 
 function startBtn(){
   startBtnEl.addEventListener("click", async function(){
+    // performs a route to the backend, which results in a new row being created in the database and returns the id of the row and the answer for the round.
     try{const {data} = await axios.get('/api/round')
-        const {roundId, roundHtml} = data;
-        // console.log("Start round data recieved.", roundId)
-        localStorage.setItem("roundId", roundId);
-        answerDisplayEl.innerHTML = roundHtml;
+      // deconstructs the information sent back by the backend
+      const {roundId, roundHtml} = data;
+      // The id of the row where the answer for this round is stored is saved in local storage to be used for reference
+      localStorage.setItem("roundId", roundId);
+      // changes the html to the recieved html from the server, which is what the user is guessing.
+      answerDisplayEl.innerHTML = roundHtml;
     }
     catch(err) {
+      // logs the message recieved if the axios get ends in an error
       console.log("start button error: ", err)
     }
   })
 }
 startBtn()
-
-function renderAnswerDisplay(){
-  // recieves html from the server to display. This is a bunch of divs that equate to whatever the user must guess, the answer.
-  axios.get('/api/answers')
-    .then(function ({roundHtml, roundId}) {
-      // changes the html to the recieved html from the server, which is what the user is guessing.
-      localStorage.setItem(roundId);
-      console.log(roundHtml, roundId)
-      answerDisplayEl.innerHTML = roundHtml;
-    })
-    .catch(function (error) {
-      // handle error
-      console.log(error);
-    })
-    .finally(function () {
-      // always executed
-    });
-}
-// renderAnswerDisplay()
 
 function startGuessLetterTriggers(){
   

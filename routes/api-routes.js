@@ -79,12 +79,16 @@ module.exports = function(app) {
   app.put("/api/answers", async function(req, res) {
     const {letterGuessed, roundId} = req.body;
     const currentRoundData = await db.Rounds.findOne({where: {id: roundId}})
-    let {guessedLetters} = currentRoundData.toJSON();
+    let {guessedLetters, allLetters, guessCount} = currentRoundData.toJSON();
     // If guessedLetters is something other than null, guessedLetters equals the already guessed letters, plus the new one.
     // ELSE, if guessedLetters is null, guessedLetters equals the letter that was guessed.
     guessedLetters = guessedLetters ? guessedLetters + letterGuessed: letterGuessed;
+    guessCount = guessCount + 1;
     db.Rounds.update(
-      {guessedLetters: guessedLetters}, 
+      {
+        guessedLetters: guessedLetters,
+        guessCount: guessCount
+      }, 
       {where:{id: roundId}}
       )
     console.log(letterGuessed, roundId, guessedLetters)
