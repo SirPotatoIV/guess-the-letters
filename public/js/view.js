@@ -4,9 +4,6 @@ const lettersToGuessEl = document.getElementById("lettersToGuess");
 const lettersGuessedEl = document.getElementById("lettersGuessed");
 const startBtnEl = document.getElementById("startBtn");
 
-
-
-
 function renderLettersToGuess(){
   let lettersToGuessHtml = "";
   
@@ -24,7 +21,8 @@ renderLettersToGuess()
 function startBtn(){
   startBtnEl.addEventListener("click", async function(){
     try{const {data} = await axios.get('/api/round')
-        console.log(data)
+        // console.log("This is the consolelog.", data)
+        answerDisplayEl.innerHTML = data;
     }
     catch(err) {
       console.log("start button error: ", err)
@@ -38,6 +36,7 @@ function renderAnswerDisplay(){
   axios.get('/api/answers')
     .then(function ({data}) {
       // changes the html to the recieved html from the server, which is what the user is guessing.
+      console.log(data)
       answerDisplayEl.innerHTML = data;
     })
     .catch(function (error) {
@@ -48,17 +47,32 @@ function renderAnswerDisplay(){
       // always executed
     });
 }
-renderAnswerDisplay()
+// renderAnswerDisplay()
 
 function startGuessLetterTriggers(){
   
   const lettersToGuessEls = document.querySelectorAll(".guessLetters");
   // console.log(lettersToGuessEls)
   for (const letter of lettersToGuessEls){
-    letter.addEventListener('click', function(){
-      letterRemoval();
-      lettersGuessedRender();
-      checkGuess();      
+    letter.addEventListener('click', async function(){
+      try{
+        await letterRemoval();
+      }
+      catch(err){
+        console.log(err)
+      }
+      try{
+        await lettersGuessedRender();
+      }
+      catch(err){
+        console.log(err)
+      }
+      try{
+        await checkGuess();      
+      }
+      catch(err){
+        console.log(err)
+      }
     })
   }
 }
@@ -77,16 +91,16 @@ function lettersGuessedRender(){
   lettersGuessedEl.innerText = allLettersGuessed;
 }
 
-// async function checkGuess(){
-//   const letterGuessed = event.target.innerText;
-//   try {
-//     const outcome = await axios.post('/api/answers', {letterGuessed: letterGuessed})
+async function checkGuess(){
+  const letterGuessed = event.target.innerText;
+  try {
+    const outcome = await axios.put('/api/answers', {letterGuessed: letterGuessed})
 
-//     console.log(outcome)
+    console.log(outcome)
 
-//   } catch(error) {
-//     // handle error
-//     console.log(error);
-//   }
-// }
+  } catch(error) {
+    // handle error
+    console.log(error);
+  }
+}
 

@@ -8,52 +8,60 @@
 // Requiring our Todo model
 const db = require("../models");
 const Answers = require("../api/Answers")
+const getAnswer = require("../api/getAnswer")
 
 // Routes
 // =============================================================
 module.exports = function(app) {
-
+  let answer = "";
   // Creates a new row in the database, which will contain all the info for a single round.
   app.get("/api/round", async function(req, res) {
-    function getNewAnswer(){
-
-
+    // Get an answer for the user to guess
+    try{
+      answer = await getAnswer();
     }
-    getNewAnswer()
-    
-    function createNewRow(){
-      // Used later to make sure the character being checked is part of the alaphbet and not a special symbol.
-      const letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];    
-      // The full thing the player has to guess. This will eventually come from an api
-      const answer = "The Matrix";
-      // Every letter the user has to guess. Current idea is this will be used to check against. Still need to figure out how to create this string.
-      let lettersToGuess = "";
-      // https://www.w3resource.com/javascript-exercises/javascript-function-exercise-16.php
-      for(let i=0; i < answer.length; i++){
-        const currentLetter = answer.charAt(i).toLowerCase();
-        console.log(currentLetter)
-        const letterCheck = letters.indexOf(currentLetter);
-        const uniqLetterCheck = lettersToGuess.indexOf(currentLetter);
-        if(uniqLetterCheck === -1 && letterCheck > 0){
-          lettersToGuess = lettersToGuess + currentLetter;
-        }
+    catch(err){
+      console.log("Error getting answer from omdb: ", err)
+    }
+
+    // Used later to make sure the character being checked is part of the alaphbet and not a special symbol.
+    const letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];    
+    // Every letter the user has to guess. Current idea is this will be used to check against. Still need to figure out how to create this string.
+    let lettersToGuess = "";
+    // https://www.w3resource.com/javascript-exercises/javascript-function-exercise-16.php
+    console.log(answer.length)
+    // Loops through answer and stores unique letters in lettersToGuess
+    for(let i=0; i < answer.length; i++){
+      // stores the current letter in the loop and makes it lowercase
+      const currentLetter = answer.charAt(i).toLowerCase();
+      // Checks to see if the current letter is actually a letter and not a special character
+      const letterCheck = letters.indexOf(currentLetter);
+      // Checks if the current letter isn't already in the string lettersToGuess
+      const uniqLetterCheck = lettersToGuess.indexOf(currentLetter);
+      // If the letter isn't in the string lettersToGuess and it is actually a letter, we store it in lettersToGuess
+      if(uniqLetterCheck === -1 && letterCheck > 0){
+        lettersToGuess = lettersToGuess + currentLetter;
       }
+    }
+    // tells the database to create this row in the table Rounds.
+    try { 
+      const response = await db.Rounds.create({
+        answer: answer, 
+        allLetters: lettersToGuess
+      })
       
-      // tells the database to create this row in the table Rounds.
-      try { 
-        const response = await db.Rounds.create({
-          answer: answer, 
-          allLetters: lettersToGuess
-        })
-        
-        // console.log("response from db", response)
-        return res.json(response)
-      }
-      catch(err) { 
-        console.log("creating round error: ", err)
-      }
+      // console.log("response from db", response)
+      // return res.json(response)
     }
-    createNewRow()
+    catch(err) { 
+      console.log("creating round error: ", err)
+    }
+    // Used to create the HTML to display to the users blanks for each letter they have to guess.
+    const currentRoundAnswer = new Answers(answer);
+    // Stores the html in the constant result
+    const roundHtml = currentRoundAnswer.createAnswerHtml();
+    // Send the html to index.js, which will change index.html to display the html that is sent.
+    return res.json(roundHtml)
   });
 
   // GET route for getting the answer the user has to guess
@@ -67,11 +75,11 @@ module.exports = function(app) {
   });
 
   // POST route for ...
-  app.post("/api/answers", function(req, res) {
+  app.put("/api/answers", function(req, res) {
     const {letterGuessed} = req.body;
    
     console.log(letterGuessed)
-    return res.json("test")
+    return res.json(letterGuessed)
   });
 
 };
