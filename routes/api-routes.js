@@ -65,16 +65,6 @@ module.exports = function(app) {
     return res.json(roundStartData)
   });
 
-  // // GET route for getting the answer the user has to guess
-  // app.get("/api/answers", function(req, res) {
-  //   // Used to create the HTML to display to the users blanks for each letter they have to guess.
-  //   const firstAnswer = new Answers("The Matrix");
-  //   // Stores the html in the constant result
-  //   const result = firstAnswer.createAnswerHtml();
-  //   // Send the html to index.js, which will change index.html to display the html that is sent.
-  //   return res.json(result)
-  // });
-
   // Occurs every time the player guesses a letter. Front-end sends the guessed letter and the round id, which is the corresponding row in the database.
   app.put("/api/answers", async function(req, res) {
     // deconstructs what the front-end sent
@@ -94,34 +84,39 @@ module.exports = function(app) {
       // If guessedLetters is something other than null, guessedLetters equals the already guessed letters, plus the new one.
       // ELSE, if guessedLetters is null, guessedLetters equals the letter that was guessed.
       guessedLetters = guessedLetters ? guessedLetters + letterGuessed: letterGuessed;
+      // if checkGuess is equal to or greater than 0, that means the letter guessed is in the answer, therefore the guess is correct
       guessCorrect = true;
       for(let i=0; i < answer.length; i++){
         const character = answer[i].toLowerCase();
         const isLetter = letters.indexOf(character)
         const isGuessed = guessedLetters.indexOf(character);
-        // want to make letters black divs eventually and spaces or special characters visible since the user won't be guessing those
+        // if the current character is a letter and is a guessed letter
         if(isLetter >= 0 && isGuessed >= 0){
           answerHtml = answerHtml + `<div class="characterHolder knownLetter">${character}</div>`;  
         }
+        // if the current character is a letter, but not guessed yet
         if(isLetter >= 0 && isGuessed < 0){
           answerHtml = answerHtml + `<div class="characterHolder unknownLetter">-</div>`;
         }
+        // if the current character is not a letter
         if(isLetter < 0){
           answerHtml = answerHtml + `<div class="nonLetter characterHolder">${answer[i]}</div>`;
         }
       }
     }else {
+      // This only occurs if guessCheck results in a -1, meaning the guessed letter is not one of the letters in the answer
       guessCorrect = false;
+      // Only incrementing guess count if the guess is incorrect.
       guessCount = guessCount + 1;
     }
-    // Decide if game should continue
+    // Decide if game should continue. If guess count reaches 8, the outcome will be set to failed. guess count only increases when the player guesses a letter that is not in the answer
     if(guessCount === 8){
       outcome = "failed";
     }
+    // Currently have guessCorrect in the condition, because if there are no correctly guessed letters yet, then guessedLetters is null, which means it has no length and an error occurs.
     if(guessCorrect && allLetters.length === guessedLetters.length){
       outcome = "win";
     }
-    
     // updates the current round data in the database
     await db.Rounds.update(
       {
