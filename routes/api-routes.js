@@ -29,7 +29,7 @@ module.exports = function(app) {
     // Every letter the user has to guess. Current idea is this will be used to check against. Still need to figure out how to create this string.
     let lettersToGuess = "";
     // https://www.w3resource.com/javascript-exercises/javascript-function-exercise-16.php
-    console.log(answer.length)
+    // console.log(answer.length)
     // Loops through answer and stores unique letters in lettersToGuess
     for(let i=0; i < answer.length; i++){
       // stores the current letter in the loop and makes it lowercase
@@ -44,13 +44,13 @@ module.exports = function(app) {
       }
     }
     // tells the database to create this row in the table Rounds.
+    let roundId = "";
     try { 
       const response = await db.Rounds.create({
         answer: answer, 
         allLetters: lettersToGuess
       })
-      
-      // console.log("response from db", response)
+      roundId = response.dataValues.id;
       // return res.json(response)
     }
     catch(err) { 
@@ -60,8 +60,9 @@ module.exports = function(app) {
     const currentRoundAnswer = new Answers(answer);
     // Stores the html in the constant result
     const roundHtml = currentRoundAnswer.createAnswerHtml();
+    const roundStartData = {roundHtml, roundId}
     // Send the html to index.js, which will change index.html to display the html that is sent.
-    return res.json(roundHtml)
+    return res.json(roundStartData)
   });
 
   // GET route for getting the answer the user has to guess
@@ -75,10 +76,19 @@ module.exports = function(app) {
   });
 
   // POST route for ...
-  app.put("/api/answers", function(req, res) {
-    const {letterGuessed} = req.body;
-   
-    console.log(letterGuessed)
+  app.put("/api/answers", async function(req, res) {
+    const {letterGuessed, roundId} = req.body;
+    const currentRoundData = await db.Rounds.findOne({where: {id: roundId}})
+    let {guessedLetters} = currentRoundData.toJSON();
+    // If guessedLetters is something other than null, guessedLetters equals the already guessed letters, plus the new one.
+    // ELSE, if guessedLetters is null, guessedLetters equals the letter that was guessed.
+    guessedLetters = guessedLetters ? guessedLetters + letterGuessed: letterGuessed;
+    db.Rounds.update(
+      {guessedLetters: guessedLetters}, 
+      {where:{id: roundId}}
+      )
+    console.log(letterGuessed, roundId, guessedLetters)
+
     return res.json(letterGuessed)
   });
 

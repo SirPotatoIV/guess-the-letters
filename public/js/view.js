@@ -21,8 +21,10 @@ renderLettersToGuess()
 function startBtn(){
   startBtnEl.addEventListener("click", async function(){
     try{const {data} = await axios.get('/api/round')
-        // console.log("This is the consolelog.", data)
-        answerDisplayEl.innerHTML = data;
+        const {roundId, roundHtml} = data;
+        // console.log("Start round data recieved.", roundId)
+        localStorage.setItem("roundId", roundId);
+        answerDisplayEl.innerHTML = roundHtml;
     }
     catch(err) {
       console.log("start button error: ", err)
@@ -34,10 +36,11 @@ startBtn()
 function renderAnswerDisplay(){
   // recieves html from the server to display. This is a bunch of divs that equate to whatever the user must guess, the answer.
   axios.get('/api/answers')
-    .then(function ({data}) {
+    .then(function ({roundHtml, roundId}) {
       // changes the html to the recieved html from the server, which is what the user is guessing.
-      console.log(data)
-      answerDisplayEl.innerHTML = data;
+      localStorage.setItem(roundId);
+      console.log(roundHtml, roundId)
+      answerDisplayEl.innerHTML = roundHtml;
     })
     .catch(function (error) {
       // handle error
@@ -93,8 +96,12 @@ function lettersGuessedRender(){
 
 async function checkGuess(){
   const letterGuessed = event.target.innerText;
+  const roundId = localStorage.getItem('roundId')
   try {
-    const outcome = await axios.put('/api/answers', {letterGuessed: letterGuessed})
+    const outcome = await axios.put('/api/answers', {
+      letterGuessed: letterGuessed,
+      roundId: roundId
+    })
 
     console.log(outcome)
 
