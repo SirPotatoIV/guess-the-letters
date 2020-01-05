@@ -1,6 +1,3 @@
-const fs = require('fs');
-const Letters = require('./Letters')
-
 class Answers {
     
     constructor(answer) {
