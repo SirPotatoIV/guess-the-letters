@@ -1,4 +1,4 @@
-body{
+#container{
   font-size: 6vw;
   font-family: Garamond;
 }
@@ -82,7 +82,7 @@ button:hover{
   color: black;
 }
 
-@media (min-width: 576px) {
+@media (min-device-width: 576px) {
   body{
     font-family: Garamond;
   }
@@ -132,6 +132,6 @@ button:hover{
     text-transform: uppercase;
   }
 
-}
+} 
 
 
